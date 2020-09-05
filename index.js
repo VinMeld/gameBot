@@ -125,8 +125,8 @@ function helpScrambler(args, message) {
     if (args[0].toLowerCase() === 'help-scrambler') {
         let embed = new Discord.MessageEmbed()
             .setColor("BLUE")
-            .setDescription(`!scores : Shows high scores
-            !scramble : anyone can participate, simply put "." before the guess, or type ".stop" to stop the game : game ends when the timer runs out on a word 5 times
+            .setDescription(`!scores : Shows high scores \n
+            !scramble : anyone can participate, simply put "." before the guess, or type ".stop" to stop the game : game ends when the timer runs out on a word 5 times \n
             !scramble alone : only you may participate, and no prefix is needed, this one will go to the scores : game ends when the timer runs out on a word 5 times`);
         message.channel.send(embed);
     }
