@@ -157,7 +157,7 @@ function scrambleWord(args, message) {
     });
     collector.on('collect', message1 => {
         message1.content = message1.content.substr(1, message.content.length);
-        if (message1.content === word) {
+        if (message1.content.toLowerCase() === word) {
             message.channel.send("Correct");
             correct++;
             isCorrect = true;
@@ -214,7 +214,7 @@ function scrambleWordAlone(args, message) {
         time: 10000
     });
     collector.on('collect', message1 => {
-        if (message1.content === word) {
+        if (message1.content.toLowerCase() === word) {
             message.channel.send("Correct");
             correct++;
             isCorrect = true;
@@ -252,7 +252,7 @@ function scrambleWordAlone(args, message) {
     });
 }
 client.on("message", message => {
-    const Prefix = "#";
+    const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
         let args = message.content.substring(Prefix.length).split(" ");
         scrambler(args, message);
