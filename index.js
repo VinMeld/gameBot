@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
+const token1 = require('./gitignore/token.js');
 const client = new Discord.Client();
-const token = "NzUxODc3MTQ4NDY1Mjk5NTI3.X1PeKQ.XrYlH0zkgsaVawW0gz4ipuPX--w"
+const token = token1.token
 const fs = require("fs");
 const randomWords = require('random-words');
 const score = require('./score.json');
