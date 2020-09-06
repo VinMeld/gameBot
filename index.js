@@ -193,7 +193,7 @@ function displayScore(args, message) {
 }
 
 function help(args, message) {
-    if (args[0].toLowerCase() === 'help') {
+    if (args[0].toLowerCase() === 'help-game') {
         let embed = new Discord.MessageEmbed()
             .setColor("BLUE")
             .setDescription(`!scores : Shows high scores \n
