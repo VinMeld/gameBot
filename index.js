@@ -73,11 +73,11 @@ function startQuiz(args, message) {
                 correct = 0;
                 missed = 0;
             } else {
-                startQuiz(args, message);
+                setTimeout(startQuiz(args, message), 3000);
             }
         } else if (isCorrect) {
             isCorrect = false;
-            startQuiz(args, message);
+            setTimeout(startQuiz(args, message), 3000);
         }
     });
 }
