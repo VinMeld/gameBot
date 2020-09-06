@@ -65,7 +65,7 @@ function startQuiz(args, message) {
             correct = 0;
             missed = 0;
         } else if (!isCorrect) {
-            message.channel.send(`Missed: answer was ${myArr.correct_answer}`)
+            message.channel.send(`Missed: answer was **${myArr.correct_answer.toLowerCase()}**`)
             missed++;
             if (missed > 4) {
                 message.channel.send("Too many misses, stopping");
