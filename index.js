@@ -5,6 +5,7 @@ const token = token1.token;
 const fs = require("fs");
 const randomWords = require('random-words');
 const score = require('./score.json');
+const fetch = require('node-fetch');
 
 const {
     isAbsolute
@@ -14,6 +15,17 @@ client.on("ready", async () => {
     client.user.setActivity(":)");
 
 });
+function startQuiz(args, message){
+    const response =  fetch('https://opentdb.com/api.php?amount=1');
+    console.log(response);
+    const data = response.data.json();
+    const question = data.question;
+    const answer = data.correct_answer;
+    message.channel.send(response + "\n" + data);
+}
+
+
+
 function returnPages(pages, newArgs, message, footer) {
 
     let page = 1;
@@ -133,9 +145,11 @@ function helpScrambler(args, message) {
 }
 
 function scrambleWord(args, message) {
-
-    let word = randomWords()
-    console.log(word);
+    let word = "";
+    while (word.length <= 2){
+        word = randomWords()
+    }
+   console.log(word);
     let stop = false;
     let isCorrect = false;
     let startingArrayOfCharacters = word.split('');
@@ -153,10 +167,10 @@ function scrambleWord(args, message) {
     message.channel.send(`New word **${randomWordScrambled}**`);
 
     const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
-        time: 10000
+        time: 20000
     });
     collector.on('collect', message1 => {
-        message1.content = message1.content.substr(1, message.content.length);
+        message1.content = message1.content.substr(1, message1.content.length);
         if (message1.content.toLowerCase() === word) {
             message.channel.send("Correct");
             correct++;
@@ -193,7 +207,10 @@ function scrambleWord(args, message) {
 }
 
 function scrambleWordAlone(args, message) {
-    let word = randomWords()
+    let word = "";
+    while (word.length <= 2){
+        word = randomWords()
+    }
     console.log(word);
     let stop = false;
     let isCorrect = false;
@@ -255,10 +272,15 @@ client.on("message", message => {
     const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
         let args = message.content.substring(Prefix.length).split(" ");
+        let arrayOfChannels = ['735710404050944053', '735867789897891976', '710954881690763414', '737733697431666862']
+        for (let index = 0; index < arrayOfChannels.length; index++) {
+            if (message.channel.id === arrayOfChannels[index]) {
         scrambler(args, message);
+        //startQuiz(args, message);
         helpScrambler(args, message);
         displayScore(args, message);
-
+            }
+        }
     }
 });
 
