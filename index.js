@@ -15,8 +15,9 @@ client.on("ready", async () => {
     client.user.setActivity(":)");
 
 });
-function quizManager(args, message){
-    if(args[0].toLowerCase() === 'start-quiz'){
+
+function quizManager(args, message) {
+    if (args[0].toLowerCase() === 'start-quiz') {
         startQuiz(args, message);
     }
 }
@@ -24,21 +25,21 @@ function quizManager(args, message){
 
 function startQuiz(args, message) {
     let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean", false); // false for synchronous request
-        xhr.send(null);
-        let myArr = JSON.parse(xhr.responseText).results[0];
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean", false); // false for synchronous request
+    xhr.send(null);
+    let myArr = JSON.parse(xhr.responseText).results[0];
     while (myArr.question.includes('&')) {
-         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-         xhr = new XMLHttpRequest();
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        xhr = new XMLHttpRequest();
         xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean", false); // false for synchronous request
         xhr.send(null);
-         myArr = JSON.parse(xhr.responseText).results[0];
+        myArr = JSON.parse(xhr.responseText).results[0];
     }
-        let isCorrect = false;
-        let isStop = false;
-        console.log(myArr)
-    
+    let isCorrect = false;
+    let isStop = false;
+    console.log(myArr)
+
     message.channel.send(`Question: **${myArr.question}**`)
     const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
         time: 20000
@@ -58,7 +59,7 @@ function startQuiz(args, message) {
             collector.stop();
         }
     })
-    collector.on('end', collected => {
+    collector.on('end', async collected => {
         if (isStop) {
             message.channel.send("Stopping");
             message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
@@ -73,11 +74,25 @@ function startQuiz(args, message) {
                 correct = 0;
                 missed = 0;
             } else {
-                setTimeout(startQuiz(args, message), 3000);
+                const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                (async () => {
+                    await sleep(500);
+                    await sleep(1500);
+                    startQuiz(args, message);
+                })();
+                
             }
         } else if (isCorrect) {
             isCorrect = false;
-            setTimeout(startQuiz(args, message), 3000);
+            const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                (async () => {
+                    await sleep(500);
+                    await sleep(1500);
+                    startQuiz(args, message);
+                })();
+            
         }
     });
 }
