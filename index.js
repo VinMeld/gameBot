@@ -329,7 +329,7 @@ function scrambleWordAlone(args, message) {
     });
 }
 client.on("message", message => {
-    const Prefix = "-";
+    const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
         let args = message.content.substring(Prefix.length).split(" ");
         scrambler(args, message);
