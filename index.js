@@ -352,7 +352,8 @@ function help(args, message) {
             !start-quiz tf : starts true or false \n
             !start-quiz multiple : starts a multiple choice question quiz\n
             !truth : asks a question \n
-            !dare : gives a dare`);
+            !dare : gives a dare\n
+            !invite-game : sends an invite link`);
         message.channel.send(embed);
     }
 }
@@ -481,6 +482,14 @@ function scrambleWordAlone(args, message) {
         }
     });
 }
+function invite(args, message){
+    if(args[0] === 'invite-game'){
+        let embed = new Discord.MessageEmbed()
+            .setColor("BLUE")
+            .setDescription("https://discord.com/api/oauth2/authorize?client_id=751877148465299527&permissions=6144&scope=bot");
+        message.channel.send(embed);
+    }
+}
 client.on("message", message => {
     const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
@@ -490,6 +499,7 @@ client.on("message", message => {
         help(args, message);
         displayScore(args, message);
         truthOrDare(args, message);
+        invite(args, message);
     }
 });
 
