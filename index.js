@@ -350,7 +350,9 @@ function help(args, message) {
             !scramble alone : only you may participate, and no prefix is needed, this one will go to the scores : game ends when the timer runs out on a word 5 times \n
             !start-quiz : starts a random true or false or multiple choice quiz, put "." infront your answer ex<.true> or <.1>\n
             !start-quiz tf : starts true or false \n
-            !start-quiz multiple : starts a multiple choice question quiz`);
+            !start-quiz multiple : starts a multiple choice question quiz\n
+            !truth : asks a question \n
+            !dare : gives a dare`);
         message.channel.send(embed);
     }
 }
