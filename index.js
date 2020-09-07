@@ -17,84 +17,200 @@ client.on("ready", async () => {
 });
 
 function quizManager(args, message) {
-    if (args[0].toLowerCase() === 'start-quiz') {
-        startQuiz(args, message);
+
+    //0 : random, 1 : true/false, 2: multiple
+    if (args[0].toLowerCase() === 'start-quiz' && args[1] == null) {
+        let isRandom = 0;
+        startQuiz(args, message, isRandom);
+    } 
+    if (args[0].toLowerCase() === 'start-quiz' && args[1] != null) {
+        if (args[1].toLowerCase() === 'tf') {
+            let isRandom = 1;
+            startQuiz(args, message, isRandom);
+        }
+    }  
+    if (args[0].toLowerCase() === 'start-quiz' && args[1] != null) {
+        if (args[1].toLowerCase() === 'multiple') {
+            let isRandom = 2;
+            startQuiz(args, message, isRandom);
+        }
     }
 }
 
-
-function startQuiz(args, message) {
-    let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean", false); // false for synchronous request
+function booleanStartUpQuiz(xhr) {
+    xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=boolean", false); // false for synchronous request
     xhr.send(null);
     let myArr = JSON.parse(xhr.responseText).results[0];
     while (myArr.question.includes('&')) {
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
         xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=boolean", false); // false for synchronous request
+        xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=boolean", false); // false for synchronous request
         xhr.send(null);
         myArr = JSON.parse(xhr.responseText).results[0];
     }
+    return myArr;
+}
+
+function multipleStartUpQuiz(xhr) {
+    xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=multiple", false); // false for synchronous request
+    xhr.send(null);
+    let myArr = JSON.parse(xhr.responseText).results[0];
+    while (myArr.question.includes('&') || myArr.incorrect_answers[0].includes('&') || myArr.incorrect_answers[1].includes('&') || myArr.incorrect_answers[2].includes('&') || myArr.correct_answer.includes('&')) {
+        console.log("in while loop")
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=multiple", false); // false for synchronous request
+        xhr.send(null);
+        myArr = JSON.parse(xhr.responseText).results[0];
+    }
+    console.log(myArr);
+    return myArr;
+}
+
+function startQuiz(args, message, isRandom) {
+    let decideQuiz = 3;
+
+    if (isRandom == 0) {
+        decideQuiz = between(0, 2);
+    } 
+     if (isRandom == 1) {
+        decideQuiz = 0;
+    } 
+     if (isRandom == 2) {
+        decideQuiz = 1;
+    }
+
+    let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    let xhr = new XMLHttpRequest();
+
+    let myArr;
     let isCorrect = false;
     let isStop = false;
-    console.log(myArr)
 
-    message.channel.send(`Question: **${myArr.question}**`)
-    const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
-        time: 20000
-    });
-    collector.on('collect', message1 => {
-        let content = message1.content.substr(1, message1.content.length);
-        if (content.toLowerCase() === myArr.correct_answer.toLowerCase()) {
-            correct++;
-            message.channel.send("Correct");
-            isCorrect = true;
-            collector.stop();
-        } else if (content.toLowerCase() === myArr.incorrect_answers[0].toLowerCase()) {
-            message.channel.send("Incorrect");
-            collector.stop();
-        } else if (content.toLowerCase() === 'stop') {
-            isStop = true;
-            collector.stop();
-        }
-    })
-    collector.on('end', async collected => {
-        if (isStop) {
-            message.channel.send("Stopping");
-            message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
-            correct = 0;
-            missed = 0;
-        } else if (!isCorrect) {
-            message.channel.send(`Missed: answer was **${myArr.correct_answer.toLowerCase()}**`)
-            missed++;
-            if (missed > 4) {
-                message.channel.send("Too many misses, stopping");
-                message.channel.send(`Correct: ${correct} \nMissed: ${missed}`)
+    if (decideQuiz == 0) {
+        const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
+            time: 20000
+        });
+        myArr = booleanStartUpQuiz(xhr);
+        message.channel.send(`Question: **${myArr.question}**`);
+        collector.on('collect', message1 => {
+            let content = message1.content.substr(1, message1.content.length);
+            if (myArr.correct_answer.toLowerCase().toLowerCase().startsWith(content.toLowerCase())) {
+                correct++;
+                message.channel.send("Correct");
+                isCorrect = true;
+                collector.stop();
+            } else if (content.toLowerCase() === 'stop') {
+                isStop = true;
+                collector.stop();
+            } else if (myArr.incorrect_answers[0].toLowerCase().startsWith(content.toLowerCase())) {
+                message.channel.send("Incorrect");
+                collector.stop();
+            }
+        })
+        collector.on('end', async collected => {
+            if (isStop) {
+                message.channel.send("Stopping");
+                message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
                 correct = 0;
                 missed = 0;
-            } else {
+            } else if (!isCorrect) {
+                message.channel.send(`Missed: answer was **${myArr.correct_answer.toLowerCase()}**`)
+                missed++;
+                if (missed > 4) {
+                    message.channel.send("Too many misses, stopping");
+                    message.channel.send(`Correct: ${correct} \nMissed: ${missed}`)
+                    correct = 0;
+                    missed = 0;
+                } else {
+                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        await sleep(1500);
+                        startQuiz(args, message, isRandom);
+                    })();
+
+                }
+            } else if (isCorrect) {
+                isCorrect = false;
                 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
                 (async () => {
                     await sleep(500);
                     await sleep(1500);
-                    startQuiz(args, message);
+                    startQuiz(args, message, isRandom);
                 })();
-                
+
             }
-        } else if (isCorrect) {
-            isCorrect = false;
-            const sleep = ms => new Promise(res => setTimeout(res, ms));
+        });
+    } else if (decideQuiz == 1) {
+        const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
+            time: 40000
+        });
+        myArr = multipleStartUpQuiz(xhr);
+        let randomIndex = between(1, 4);
+        let question = [];
+        question = myArr.incorrect_answers;
+        question.splice(randomIndex, 0, myArr.correct_answer);
+        message.channel.send(`Question: **${myArr.question}**\n1: ${question[0]}\n2: ${question[1]}\n3: ${question[2]}\n4: ${question[3]}`);
+
+        collector.on('collect', message1 => {
+            let content = message1.content.substr(1, message1.content.length);
+            if (parseInt(content.toLowerCase()) === parseInt(question.indexOf(myArr.correct_answer)) + 1) {
+                correct++;
+                message.channel.send("Correct");
+                isCorrect = true;
+                collector.stop();
+            } else if (content.toLowerCase() === 'stop') {
+                isStop = true;
+                collector.stop();
+            } else {
+                message.channel.send("Incorrect");
+                collector.stop();
+            }
+        })
+        collector.on('end', async collected => {
+            if (isStop) {
+                message.channel.send("Stopping");
+                message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+                correct = 0;
+                missed = 0;
+            } else if (!isCorrect) {
+                message.channel.send(`Missed: answer was **${myArr.correct_answer}**`)
+                missed++;
+                if (missed > 4) {
+                    message.channel.send("Too many misses, stopping");
+                    message.channel.send(`Correct: ${correct} \nMissed: ${missed}`)
+                    correct = 0;
+                    missed = 0;
+                } else {
+                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        await sleep(1500);
+                        startQuiz(args, message, isRandom);
+                    })();
+
+                }
+            } else if (isCorrect) {
+                isCorrect = false;
+                const sleep = ms => new Promise(res => setTimeout(res, ms));
 
                 (async () => {
                     await sleep(500);
                     await sleep(1500);
-                    startQuiz(args, message);
+                    startQuiz(args, message, isRandom);
                 })();
-            
-        }
-    });
+
+            }
+        });
+    }
+
+
+
+
 }
 
 
@@ -214,7 +330,9 @@ function help(args, message) {
             .setDescription(`!scores : Shows high scores \n
             !scramble : anyone can participate, simply put "." before the guess, or type ".stop" to stop the game : game ends when the timer runs out on a word 5 times \n
             !scramble alone : only you may participate, and no prefix is needed, this one will go to the scores : game ends when the timer runs out on a word 5 times \n
-            !start-quiz : starts a true or false quiz, put "." infront of true/false`);
+            !start-quiz : starts a random true or false or multiple choice quiz, put "." infront your answer ex<.true> or <.1>\n
+            !start-quiz tf : starts true or false \n
+            !start-quiz multiple : starts a multiple choice question quiz`);
         message.channel.send(embed);
     }
 }
