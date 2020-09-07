@@ -52,14 +52,14 @@ function booleanStartUpQuiz(xhr) {
 }
 
 function multipleStartUpQuiz(xhr) {
-    xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=multiple", false); // false for synchronous request
+    xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple", false); // false for synchronous request
     xhr.send(null);
     let myArr = JSON.parse(xhr.responseText).results[0];
     while (myArr.question.includes('&') || myArr.incorrect_answers[0].includes('&') || myArr.incorrect_answers[1].includes('&') || myArr.incorrect_answers[2].includes('&') || myArr.correct_answer.includes('&')) {
         console.log("in while loop")
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
         xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://opentdb.com/api.php?amount=1&type=multiple", false); // false for synchronous request
+        xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple", false); // false for synchronous request
         xhr.send(null);
         myArr = JSON.parse(xhr.responseText).results[0];
     }
