@@ -6,7 +6,7 @@ const fs = require("fs");
 const randomWords = require('random-words');
 const score = require('./score.json');
 const fetch = require('node-fetch');
-
+const tord = require('./TruthOrDare.json');
 const {
     isAbsolute
 } = require('path');
@@ -16,19 +16,37 @@ client.on("ready", async () => {
 
 });
 
+function truthOrDare(args, message) {
+    let random = between(0, tord.length);
+    if (args[0].toLowerCase() === "truth") {
+        while (tord[random].type != "Truth") {
+            random = between(0, tord.length);
+        }
+        message.channel.send(tord[random].summary);
+    }if (args[0].toLowerCase() === "dare") {
+        while (tord[random].type != "Dare") {
+            random = between(0, tord.length);
+        }
+        message.channel.send(tord[random].summary);
+    }
+}
+
+
+
+
 function quizManager(args, message) {
 
     //0 : random, 1 : true/false, 2: multiple
     if (args[0].toLowerCase() === 'start-quiz' && args[1] == null) {
         let isRandom = 0;
         startQuiz(args, message, isRandom);
-    } 
+    }
     if (args[0].toLowerCase() === 'start-quiz' && args[1] != null) {
         if (args[1].toLowerCase() === 'tf') {
             let isRandom = 1;
             startQuiz(args, message, isRandom);
         }
-    }  
+    }
     if (args[0].toLowerCase() === 'start-quiz' && args[1] != null) {
         if (args[1].toLowerCase() === 'multiple') {
             let isRandom = 2;
@@ -72,11 +90,11 @@ function startQuiz(args, message, isRandom) {
 
     if (isRandom == 0) {
         decideQuiz = between(0, 2);
-    } 
-     if (isRandom == 1) {
+    }
+    if (isRandom == 1) {
         decideQuiz = 0;
-    } 
-     if (isRandom == 2) {
+    }
+    if (isRandom == 2) {
         decideQuiz = 1;
     }
 
@@ -469,6 +487,7 @@ client.on("message", message => {
         quizManager(args, message);
         help(args, message);
         displayScore(args, message);
+        truthOrDare(args, message);
     }
 });
 
