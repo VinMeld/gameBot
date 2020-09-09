@@ -137,7 +137,7 @@ function startQuiz(args, message, isRandom) {
                 missed++;
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
-                    message.channel.send(`Correct: ${correct} \nMissed: ${missed}`)
+                    message.channel.send(`Correct: ${correct}`)
                     correct = 0;
                     missed = 0;
                 } else {
@@ -199,7 +199,7 @@ function startQuiz(args, message, isRandom) {
                 missed++;
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
-                    message.channel.send(`Correct: ${correct} \nMissed: ${missed}`)
+                    message.channel.send(`Correct: ${correct}`)
                     correct = 0;
                     missed = 0;
                 } else {
