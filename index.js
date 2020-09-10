@@ -7,6 +7,7 @@ const randomWords = require('random-words');
 const score = require('./score.json');
 const fetch = require('node-fetch');
 const tord = require('./TruthOrDare.json');
+const topScores = require('./topScores.json');
 const {
     isAbsolute
 } = require('path');
@@ -74,7 +75,6 @@ function multipleStartUpQuiz(xhr) {
     xhr.send(null);
     let myArr = JSON.parse(xhr.responseText).results[0];
     while (myArr.question.includes('&') || myArr.incorrect_answers[0].includes('&') || myArr.incorrect_answers[1].includes('&') || myArr.incorrect_answers[2].includes('&') || myArr.correct_answer.includes('&') || myArr.question.includes('In the Super Smash Bros. series, which character was the first one to return to the series after being absent from a previous game?') || myArr.question.includes("In 1720,") || myArr.question.includes("What game was used to adver")  || myArr.question.includes("What is the most pref") || myArr.question.includes("How many people") || myArr.question.includes("Gwyneth") || myArr.question.includes("Which American-owned") || myArr.question.includes("In Super Mario Bros., who informs Mario that the princess is in another castle?") || myArr.question.includes("What is the Capital of the United States?")) {
-        console.log("in while loop")
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
         xhr = new XMLHttpRequest();
         xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple", false); // false for synchronous request
@@ -130,6 +130,9 @@ function startQuiz(args, message, isRandom) {
             if (isStop) {
                 message.channel.send("Stopping");
                 message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+                if(isRandom == 0){
+                    addTopScores(2, correct);
+                }
                 correct = 0;
                 missed = 0;
             } else if (!isCorrect) {
@@ -138,6 +141,9 @@ function startQuiz(args, message, isRandom) {
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
                     message.channel.send(`Correct: ${correct}`)
+                    if(isRandom == 0){
+                        addTopScores(2, correct);
+                    }
                     correct = 0;
                     missed = 0;
                 } else {
@@ -192,6 +198,9 @@ function startQuiz(args, message, isRandom) {
             if (isStop) {
                 message.channel.send("Stopping");
                 message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+                if(isRandom == 0){
+                    addTopScores(2, correct);
+                }
                 correct = 0;
                 missed = 0;
             } else if (!isCorrect) {
@@ -200,6 +209,9 @@ function startQuiz(args, message, isRandom) {
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
                     message.channel.send(`Correct: ${correct}`)
+                    if(isRandom == 0){
+                        addTopScores(2, correct);
+                    }
                     correct = 0;
                     missed = 0;
                 } else {
@@ -292,7 +304,63 @@ function scrambler(args, message) {
         }
     }
 }
-
+function addTopScores(whichOne, correct){
+    console.log("in top scores");
+    // whichOne: 1 = Scramble, 2 = Quiz
+    if(whichOne == 1){
+        topScores.forEach(val =>{
+            if(val.whichOne === whichOne && val.correct < correct){
+                
+                val.whichOne = whichOne
+                val.correct= correct
+                val.date= new Date()
+                fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
+                    if (err) console.log(err);
+                });
+            }
+        })
+    } else if(whichOne == 2){
+        console.log(" in which one");
+        topScores.forEach(val =>{
+            if(val.whichOne === whichOne && val.correct < correct){
+                val.whichOne = whichOne
+                val.correct= correct
+                val.date = new Date()
+                fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
+                    if (err) console.log(err);
+                });
+            }
+        })
+    }
+}
+function showScores(args, message){
+    if (args[0] === 'community-scores') {
+        let displayingArray = [];
+        topScores.forEach(function (val, i) {
+            if(val.whichOne === 1){
+                val.whichOne = "scramble";
+            } else if(val.whichOne === 2){
+                val.whichOne = "quiz";
+            }
+            displayingArray[i] = [val.whichOne, val.correct]
+        })
+        let sortedArray = displayingArray.sort(function (a, b) {
+            return b[1] - a[1];
+        });
+        let newList = "";
+        let arrayOfPlayers = [];
+        //Making it so that each index has 10 lines
+        for (let index = 0; index < sortedArray.length; index++) {
+            newList += `${index+1}. Top score achieved in **${sortedArray[index][0]}**: ${sortedArray[index][1]}\n`;
+            if (index % 10 == 0 && index != 0) {
+                arrayOfPlayers[(index - 10) / 10] = newList;
+                newList = "";
+            }
+        }
+        arrayOfPlayers[arrayOfPlayers.length] = newList;
+        returnPages(arrayOfPlayers, "All Scores", message, "Scores");
+    }  
+}
 function addScore(author, correct) {
     let isExist = false;
     score.forEach(val => {
@@ -353,7 +421,8 @@ function help(args, message) {
             !start-quiz multiple : starts a multiple choice question quiz\n
             !truth : asks a question \n
             !dare : gives a dare\n
-            !invite-game : sends an invite link`);
+            !invite-game : sends an invite link
+            !community-score : showes the top scores for community games`);
         message.channel.send(embed);
     }
 }
@@ -401,6 +470,7 @@ function scrambleWord(args, message) {
         if (stop) {
             message.channel.send("Stopping");
             message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+            addTopScores(1, correct);
             correct = 0;
             missed = 0;
         } else if (!isCorrect) {
@@ -409,6 +479,7 @@ function scrambleWord(args, message) {
             if (missed > 4) {
                 message.channel.send("Too many misses, stopping");
                 message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+                addTopScores(1, correct);
                 correct = 0;
                 missed = 0;
             } else {
@@ -500,6 +571,7 @@ client.on("message", message => {
         displayScore(args, message);
         truthOrDare(args, message);
         invite(args, message);
+        showScores(args, message);
     }
 });
 
