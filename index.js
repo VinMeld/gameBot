@@ -459,7 +459,7 @@ function scrambleWord(args, message) {
             correct++;
             isCorrect = true;
             collector.stop()
-        } else if (message1.content === 'stop') {
+        } else if (message1.content.toLowerCase() === 'stop') {
             stop = true;
             collector.stop()
         } else {
@@ -521,7 +521,7 @@ function scrambleWordAlone(args, message) {
             correct++;
             isCorrect = true;
             collector.stop()
-        } else if (message1.content === 'stop') {
+        } else if (message1.content.toLowerCase() === 'stop') {
             stop = true;
             collector.stop()
         } else {
