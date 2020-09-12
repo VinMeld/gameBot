@@ -1,11 +1,11 @@
 [
   {
     "author": "Vinaycat",
-    "correct": 8
+    "correct": 11
   },
   {
     "author": "flagnation",
-    "correct": 6
+    "correct": 20
   },
   {
     "author": "alohahaha",
@@ -17,7 +17,7 @@
   },
   {
     "author": "koala",
-    "correct": 7
+    "correct": 22
   },
   {
     "author": "Groovy",
@@ -25,10 +25,18 @@
   },
   {
     "author": "josh?!",
-    "correct": 17
+    "correct": 26
   },
   {
     "author": "Slewis",
     "correct": 7
+  },
+  {
+    "author": "bagsofbags",
+    "correct": 9
+  },
+  {
+    "author": "clam",
+    "correct": 0
   }
 ]
