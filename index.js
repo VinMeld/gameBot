@@ -334,7 +334,7 @@ function addTopScores(whichOne, correct){
     }
 }
 function showScores(args, message){
-    if (args[0] === 'community-scores') {
+    if (args[0].toLowerCase().startsWith('community-scores')) {
         let displayingArray = [];
         topScores.forEach(function (val, i) {
             if(val.whichOne === 1){
@@ -421,8 +421,9 @@ function help(args, message) {
             !start-quiz multiple : starts a multiple choice question quiz\n
             !truth : asks a question \n
             !dare : gives a dare\n
-            !invite-game : sends an invite link
-            !community-score : showes the top scores for community games`);
+            !invite-game : sends an invite link\n
+            !community-score : shows the top scores for community games\n
+            !joke : Sends a joke`);
         message.channel.send(embed);
     }
 }
@@ -478,7 +479,7 @@ function scrambleWord(args, message) {
             missed++;
             if (missed > 4) {
                 message.channel.send("Too many misses, stopping");
-                message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
+                message.channel.send(`Correct: ${correct}`);
                 addTopScores(1, correct);
                 correct = 0;
                 missed = 0;
@@ -561,6 +562,19 @@ function invite(args, message){
         message.channel.send(embed);
     }
 }
+function sendJoke(args, message){
+    if(args[0].toLowerCase().startsWith('joke')){
+        var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        var xhr = new XMLHttpRequest(); 
+        xhr.open("GET", "https://some-random-api.ml/joke", false); // false for synchronous request
+        xhr.send(null);
+        let myImage = JSON.parse(xhr.responseText).joke;
+        let embed = new Discord.MessageEmbed()
+                .setColor("GREEN")
+                .setDescription(`${myImage}`)
+        message.channel.send(embed)
+    }
+}
 client.on("message", message => {
     const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
@@ -572,6 +586,7 @@ client.on("message", message => {
         truthOrDare(args, message);
         invite(args, message);
         showScores(args, message);
+        sendJoke(args, message);
     }
 });
 
