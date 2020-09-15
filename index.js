@@ -597,7 +597,6 @@ function randomGuess(args, message, randomNumber) {
     })
     collector.on('end', collected => {
         if (stop1) {
-            message.channel.send("Stopping");
         } else if(correct){
             decideRandomGuess(["guess-number"], message);
         } else {
