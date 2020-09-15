@@ -562,6 +562,47 @@ function invite(args, message){
         message.channel.send(embed);
     }
 }
+function decideRandomGuess(args, message){
+    if (args[0].toLowerCase() === "guess-number") {
+        message.channel.send("Guess a number");
+        let randomNumber = between(0, 4);
+        randomGuess(args, message, randomNumber);
+    }
+}
+function randomGuess(args, message, randomNumber) {
+    let stop1 = false;
+    let correct = false;
+    randomNumber = parseInt(randomNumber);
+    const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id
+    );
+    collector.on('collect', message1 => {
+        let content = message1.content.substr(1, message1.content.length);
+        console.log(parseInt(content, 10) == randomNumber);
+        if (parseInt(content) == randomNumber) {
+            message.channel.send("Correct");
+            correct = true;
+            collector.stop();
+        } else if (content < randomNumber) {
+            message.channel.send("Guess higher");
+            collector.stop();
+        } else if (content > randomNumber) {
+            message.channel.send("Guess lower");
+            collector.stop();
+        } else if (content === "stop") {
+            stop1 = true;
+            message.channel.send("Stopping");
+        }
+    })
+    collector.on('end', collected => {
+        if (stop1) {
+            message.channel.send("Stopping");
+        } else if(correct){
+            decideRandomGuess(["guess-number"], message);
+        } else {
+            randomGuess(args, message, randomNumber);
+        }
+    })
+}
 function sendJoke(args, message){
     if(args[0].toLowerCase().startsWith('joke')){
         var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
@@ -587,6 +628,7 @@ client.on("message", message => {
         invite(args, message);
         showScores(args, message);
         sendJoke(args, message);
+        decideRandomGuess(args, message);
     }
 });
 
