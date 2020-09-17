@@ -309,23 +309,24 @@ function addTopScores(whichOne, correct){
     // whichOne: 1 = Scramble, 2 = Quiz
     if(whichOne == 1){
         topScores.forEach(val =>{
-            if(val.whichOne === whichOne && val.correct < correct){
+            if(val.whichOne == whichOne && val.correct < correct){
                 
-                val.whichOne = whichOne
-                val.correct= correct
-                val.date= new Date()
+                val.whichOne = whichOne;
+                val.correct= correct;
+                val.date= new Date();
                 fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
                     if (err) console.log(err);
                 });
             }
         })
     } else if(whichOne == 2){
-        console.log(" in which one");
+        console.log(" Quiz");
         topScores.forEach(val =>{
-            if(val.whichOne === whichOne && val.correct < correct){
-                val.whichOne = whichOne
-                val.correct= correct
-                val.date = new Date()
+            if(val.whichOne == whichOne && val.correct < correct){
+
+                val.whichOne = whichOne;
+                val.correct= correct;
+                val.date = new Date();
                 fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
                     if (err) console.log(err);
                 });
