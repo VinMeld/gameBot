@@ -334,7 +334,7 @@ function addTopScores(whichOne, correct){
     }
 }
 function showScores(args, message){
-    if (args[0].toLowerCase().startsWith('community-scores')) {
+    if (args[0].toLowerCase().startsWith('community-score')) {
         let displayingArray = [];
         topScores.forEach(function (val, i) {
             if(val.whichOne === 1){
