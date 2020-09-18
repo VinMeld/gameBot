@@ -768,8 +768,9 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             if (guessesRemaining == 0) {
 
 
-                embed.setImage(imageSetter)
+                embed.setImage(imageSetter);
                 embed.setDescription(`you have lost :( the word was **${word}**`);
+                embed.footer(" ");
                 message.channel.send({
                     embed,
                     files: [attachement]
@@ -833,8 +834,9 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 attachement = results[1];
             }
             if (guessesRemaining == 0) {
-                embed.setImage(imageSetter)
+                embed.setImage(imageSetter);
                 embed.setDescription(`you have lost :( the word was **${word}**`);
+                embed.footer(" ");
                 message.channel.send({
                     embed,
                     files: [attachement]
