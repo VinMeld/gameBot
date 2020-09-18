@@ -634,18 +634,19 @@ function hangmanSetup(args, message) { //
         for (let index = 0; index < word.length; index++) {
             wordDisplay[index] = "- ";
         }
-        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+        let guessedLetters = [];
+        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
     }
 }
 
-function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect) {
+function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters) {
     let imageSetter = images[images.length-guessesRemaining -1]
     let isStop = false;
     let alreadyGuessed = false;
     let embed = new Discord.MessageEmbed()
         .setColor("YELLOW")
         .setTitle("Hangman")
-        .setDescription(`Word: ${wordDisplay.join(" ")} \n ${letters.join(" ")} \n Guess a letter`)
+        .setDescription(`Word: ${wordDisplay.join(" ")} \n ${guessedLetters.join(" ")}`)
         .setImage(imageSetter)
         .setFooter(`Guesses remaining: ${guessesRemaining}`);
     message.channel.send(embed);
@@ -664,6 +665,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             }
             if (indexOfLetter != -1) {
                 letters.splice(indexOfLetter, 1);
+                guessedLetters.push(newGuess)
                 let indexOfCharacterArray = charArrayOfWord.indexOf(newGuess);
                 if (indexOfCharacterArray != -1) {
                     for (let index = 0; index < charArrayOfWord.length; index++) {
@@ -673,7 +675,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                             totalTimesCorrect++;
                         }
                     }
-                    embed.setDescription(`Word: ${wordDisplay.join(" ")} \n ${letters.join(" ")} \n Guess a letter`);
+                    embed.setDescription(`${wordDisplay.join(" ")} \n ${guessedLetters.join(" ")}`);
                     win = true;
                     collector.stop();
                 } else {
@@ -705,7 +707,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
 
                     (async () => {
                         await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
                     })();
                 
             }
@@ -726,7 +728,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
 
                     (async () => {
                         await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
                     })();
             }
         } else if (isStop) {
@@ -744,7 +746,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
 
                     (async () => {
                         await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
                     })();
         } else {
             guessesRemaining--;
@@ -761,7 +763,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
 
                     (async () => {
                         await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
                     })();
             }
         }
