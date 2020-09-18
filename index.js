@@ -720,7 +720,13 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
         if (win) {
             //console.log("in correct");
             win = false;
-            if (totalTimesCorrect == word.length) {
+            if (totalTimesCorrect == word.length && guessesRemaining == 7) {
+                let winEmbed = new Discord.MessageEmbed()
+                    .setColor("YELLOW")
+                    .setDescription(`Wow you got nothing wrong! :sunglasses: Truly amazing I didn't even get out the rope!`)
+                message.channel.send(winEmbed);
+            } 
+            else if (totalTimesCorrect == word.length) {
                 let winEmbed = new Discord.MessageEmbed()
                     .setColor("YELLOW")
                     .setDescription(`You have won!`)
