@@ -8,6 +8,8 @@ const score = require('./score.json');
 const fetch = require('node-fetch');
 const tord = require('./TruthOrDare.json');
 const topScores = require('./topScores.json');
+const images = ["https://i.imgur.com/bBbUtIK.jpg", "https://i.imgur.com/nRKO6DM.jpg", "https://i.imgur.com/lGfZhbc.jpg", "https://i.imgur.com/kyGSGq3.jpg", "https://i.imgur.com/2YkAjHt.jpg","https://i.imgur.com/baE4H0N.jpg","https://i.imgur.com/aPUwgWT.jpg","https://i.imgur.com/eOpJRvl.jpg"]
+
 const {
     isAbsolute
 } = require('path');
@@ -425,7 +427,8 @@ function help(args, message) {
             !invite-game : sends an invite link\n
             !community-score : shows the top scores for community games\n
             !joke : Sends a joke\n
-            !guess-number : Guess a number from 1-10, put a "." infront of it`);
+            !guess-number : Guess a number from 1-10, put a "." infront of it\n
+            !hangman : Play hangman, guess word by putting a "." infront of it [Link to hangman images](https://www.oligalma.com/en/downloads/images/hangman)`);
         message.channel.send(embed);
     }
 }
@@ -618,11 +621,164 @@ function sendJoke(args, message){
         message.channel.send(embed)
     }
 }
+function hangmanSetup(args, message) { //
+    if (args[0].toLowerCase() === "hangman") {
+        console.log("in hangman")
+        let word = randomWords();
+        console.log(word);
+        let guessesRemaining = images.length - 1;
+        let wordDisplay = [];
+        let totalTimesCorrect = 0;
+        let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+        let win = false;
+        for (let index = 0; index < word.length; index++) {
+            wordDisplay[index] = "- ";
+        }
+        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+    }
+}
+
+function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect) {
+    let imageSetter = images[images.length-guessesRemaining -1]
+    let isStop = false;
+    let alreadyGuessed = false;
+    let embed = new Discord.MessageEmbed()
+        .setColor("YELLOW")
+        .setTitle("Hangman")
+        .setDescription(`Word: ${wordDisplay.join(" ")} \n ${letters.join(" ")} \n Guess a letter`)
+        .setImage(imageSetter)
+        .setFooter(`Guesses remaining: ${guessesRemaining}`);
+    message.channel.send(embed);
+    let wrong = false;
+    const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
+        time: 100000
+    });
+    collector.on('collect', message1 => {
+        if (message1.content != "") {
+            let newGuess = message1.content.substr(1, 1).toLowerCase();
+            let indexOfLetter = letters.indexOf(newGuess);
+            let charArrayOfWord = word.split("");
+            if (message1.content.substr(1, message1.content.length).toLowerCase().startsWith('stop')) {
+                isStop = true;
+                collector.stop();
+            }
+            if (indexOfLetter != -1) {
+                letters.splice(indexOfLetter, 1);
+                let indexOfCharacterArray = charArrayOfWord.indexOf(newGuess);
+                if (indexOfCharacterArray != -1) {
+                    for (let index = 0; index < charArrayOfWord.length; index++) {
+                        const element = charArrayOfWord[index];
+                        if (element === newGuess) {
+                            wordDisplay[index] = newGuess;
+                            totalTimesCorrect++;
+                        }
+                    }
+                    embed.setDescription(`Word: ${wordDisplay.join(" ")} \n ${letters.join(" ")} \n Guess a letter`);
+                    win = true;
+                    collector.stop();
+                } else {
+                    //console.log("setting wrong to true");
+                    wrong = true;
+                    collector.stop();
+                }
+            } else {
+                
+                //console.log("setting alreadyGuessed to true")
+                alreadyGuessed = true;
+                collector.stop();
+            }
+        }
+    })
+    collector.on('end', async message1 => {
+        
+        //console.log(`win: ${win} wrong: ${wrong} alreadyGuessed: ${alreadyGuessed} isStop: ${isStop}`)
+        if (win) {
+            //console.log("in correct");
+            win = false;
+            if (totalTimesCorrect == word.length) {
+                let winEmbed = new Discord.MessageEmbed()
+                    .setColor("YELLOW")
+                    .setDescription(`You have won!`)
+                message.channel.send(winEmbed);
+            } else {
+                const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                    })();
+                
+            }
+        } else if (wrong) {
+            wrong = false;
+            //console.log("in wrong");
+            guessesRemaining--;
+            if (guessesRemaining == 0) {
+                let lossEmbed = new Discord.MessageEmbed()
+                    .setColor("YELLOW")
+                    .setImage(images[images.length - 1])
+                    .setDescription(`you have lost :( the word was **${word}**`)
+                message.channel.send(lossEmbed);
+            } else {
+                embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
+                    .setImage(imageSetter);
+                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                    })();
+            }
+        } else if (isStop) {
+            //console.log("in stop")
+            let stoppingEmbed = new Discord.MessageEmbed()
+                .setColor("YELLOW")
+                .setDescription(`Stopping, word was **${word}**`)
+            message.channel.send(stoppingEmbed);
+        } else if (alreadyGuessed) {
+            let guessEmbed = new Discord.MessageEmbed()
+                .setDescription("Letter does not exist or has already been guessed.")
+                message.channel.send(guessEmbed);
+            //console.log("in already guessed")
+            const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                    })();
+        } else {
+            guessesRemaining--;
+            if (guessesRemaining == 0) {
+                let lossEmbed = new Discord.MessageEmbed()
+                    .setColor("YELLOW")
+                    .setDescription(`you have lost :( the word was **${word}**`)
+                message.channel.send(lossEmbed);
+            } else {
+                //console.log("in else");
+                embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
+                    .setImage(imageSetter);
+                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+                    (async () => {
+                        await sleep(500);
+                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect);
+                    })();
+            }
+        }
+
+    })
+}
+function ping(args, message){
+    if(args[0].toLowerCase() === "ping"){
+        message.channel.send("pong!");
+    }
+}
 client.on("message", message => {
     const Prefix = "!";
     if (message.content.startsWith(Prefix)) {
         let args = message.content.substring(Prefix.length).split(" ");
         scrambler(args, message);
+        hangmanSetup(args, message);
         quizManager(args, message);
         help(args, message);
         displayScore(args, message);
@@ -631,6 +787,7 @@ client.on("message", message => {
         showScores(args, message);
         sendJoke(args, message);
         decideRandomGuess(args, message);
+        ping(args, message);
     }
 });
 
