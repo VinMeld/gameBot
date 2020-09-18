@@ -630,7 +630,6 @@ function sendJoke(args, message) {
 
 function hangmanSetup(args, message) { //
     if (args[0].toLowerCase() === "hangman") {
-        console.log("in hangman")
         let word = randomWords();
         console.log(word);
         let guessesRemaining = images.length - 1;
@@ -677,7 +676,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             let newGuess = message1.content.substr(1, 1).toLowerCase();
             let indexOfLetter = letters.indexOf(newGuess);
             let charArrayOfWord = word.split("");
-            if (message1.content.substr(1, message1.content.length).length >= 3) {
+            if (message1.content.substr(1, message1.content.length).length >= 2) {
                 if (message1.content.substr(1, message1.content.length).toLowerCase().startsWith(word)) {
                     totalTimesCorrect = word.length;
                     win = true;
@@ -691,7 +690,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 isStop = true;
                 collector.stop();
             }
-            if (indexOfLetter != -1) {
+            if (indexOfLetter != -1 && wrong == false) {
                 letters.splice(indexOfLetter, 1);
                 guessedLetters.push(newGuess)
                 let indexOfCharacterArray = charArrayOfWord.indexOf(newGuess);
@@ -707,7 +706,6 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                     win = true;
                     collector.stop();
                 } else {
-                    //console.log("setting wrong to true");
                     wrong = true;
                     collector.stop();
                 }
@@ -745,8 +743,6 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
 
             }
         } else if (wrong) {
-            wrong = false;
-            //console.log("in wrong");
             guessesRemaining--;
 
             //console.log('here');
