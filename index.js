@@ -432,7 +432,8 @@ function help(args, message) {
             !community-score : shows the top scores for community games\n
             !joke : Sends a joke\n
             !guess-number : Guess a number from 1-10, put a "." infront of it\n
-            !hangman : Play hangman, guess word by putting a "." infront of it [Link to hangman images](https://www.oligalma.com/en/downloads/images/hangman)`);
+            !hangman : Play hangman, guess word by putting a "." infront of it [Link to hangman images](https://www.oligalma.com/en/downloads/images/hangman)\n
+            !hangtogether : Play hangman together, whoever uses this command gets to enter the word, and everyone else can guess!`);
         message.channel.send(embed);
     }
 }
@@ -628,23 +629,67 @@ function sendJoke(args, message) {
     }
 }
 
-function hangmanSetup(args, message) { //
+function hangManSetupPartTwo(args, message) {
+    if (args[0].toLowerCase().startsWith('hangtogether')) {
+        message.author.send("Put word here, no spaces");
+        let word = "";
+        let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+        message.author.createDM().then(dmchannel => {
+            let isCharacterInAlphabet = false;
+
+            const collector = new Discord.MessageCollector(dmchannel, m => m.author.id === message.author.id, {
+                time: 100000
+            });
+            collector.on('collect', message1 => {
+                word = message1.content.split(" ")[0].toLowerCase();
+                let charArrayOfWord = word.split("");
+                for (let index = 0; index < charArrayOfWord.length; index++) {
+                    const element = charArrayOfWord[index];
+                    for (let index = 0; index < letters.length; index++) {
+                        const element1 = letters[index];
+                        if(element === element1){
+                            isCharacterInAlphabet = true;
+                        }
+                    }
+                    if(isCharacterInAlphabet == false){
+                        message1.author.send("invalid word.");
+                        collector.stop();
+                    } 
+                }
+                collector.stop();
+                
+            })
+            collector.on('end', message1 =>{
+                if(isCharacterInAlphabet){
+                    hangmanSetup(message, word);
+                }
+            })
+        })
+    }
     if (args[0].toLowerCase() === "hangman") {
         let word = randomWords();
-        console.log(word);
-        let guessesRemaining = images.length - 1;
-        let wordDisplay = [];
-        let totalTimesCorrect = 0;
-        let imageSetter = images[0];
-        let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
-        let win = false;
-        for (let index = 0; index < word.length; index++) {
-            wordDisplay[index] = "- ";
-        }
-        let attachement;
-        let guessedLetters = [];
-        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+        hangmanSetup(message, word)
     }
+}
+
+
+function hangmanSetup(message, randomWord) { //
+
+    let word = randomWord;
+    console.log(word);
+    let guessesRemaining = images.length - 1;
+    let wordDisplay = [];
+    let totalTimesCorrect = 0;
+    let imageSetter = images[0];
+    let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+    let win = false;
+    for (let index = 0; index < word.length; index++) {
+        wordDisplay[index] = "- ";
+    }
+    let attachement;
+    let guessedLetters = [];
+    hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+
 }
 
 function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement) {
@@ -920,7 +965,7 @@ client.on("message", message => {
     if (message.content.startsWith(Prefix)) {
         let args = message.content.substring(Prefix.length).split(" ");
         scrambler(args, message);
-        hangmanSetup(args, message);
+        hangManSetupPartTwo(args, message);
         quizManager(args, message);
         help(args, message);
         displayScore(args, message);
