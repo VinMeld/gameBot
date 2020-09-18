@@ -677,11 +677,16 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             let newGuess = message1.content.substr(1, 1).toLowerCase();
             let indexOfLetter = letters.indexOf(newGuess);
             let charArrayOfWord = word.split("");
-            if(message1.content.substr(1,message1.content.length).toLowerCase().startsWith(word)){
-                totalTimesCorrect = word.length;
-                win = true;
-                collector.stop();
-            } 
+            if (message1.content.substr(1, message1.content.length).length >= 3) {
+                if (message1.content.substr(1, message1.content.length).toLowerCase().startsWith(word)) {
+                    totalTimesCorrect = word.length;
+                    win = true;
+                    collector.stop();
+                } else {
+                    wrong = true;
+                    collector.stop();
+                }
+            }
             if (message1.content.substr(1, message1.content.length).toLowerCase().startsWith('stop')) {
                 isStop = true;
                 collector.stop();
@@ -725,8 +730,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                     .setColor("YELLOW")
                     .setDescription(`Wow you got nothing wrong! :sunglasses: Truly amazing I didn't even get out the rope!`)
                 message.channel.send(winEmbed);
-            } 
-            else if (totalTimesCorrect == word.length) {
+            } else if (totalTimesCorrect == word.length) {
                 let winEmbed = new Discord.MessageEmbed()
                     .setColor("YELLOW")
                     .setDescription(`You have won!`)
