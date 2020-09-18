@@ -629,18 +629,20 @@ function hangmanSetup(args, message) { //
         let guessesRemaining = images.length - 1;
         let wordDisplay = [];
         let totalTimesCorrect = 0;
+        let imageSetter = images[0];
         let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
         let win = false;
         for (let index = 0; index < word.length; index++) {
             wordDisplay[index] = "- ";
         }
+        let attachement;
         let guessedLetters = [];
-        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
+        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
     }
 }
 
-function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters) {
-    let imageSetter = images[images.length-guessesRemaining -1]
+function hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement) {
+    // let imageSetter = images[images.length - guessesRemaining - 1];
     let isStop = false;
     let alreadyGuessed = false;
     let embed = new Discord.MessageEmbed()
@@ -649,7 +651,13 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
         .setDescription(`Word: ${wordDisplay.join(" ")} \n ${guessedLetters.join(" ")}`)
         .setImage(imageSetter)
         .setFooter(`Guesses remaining: ${guessesRemaining}`);
-    message.channel.send(embed);
+    
+    if (attachement != null){
+        //console.log('sending attachement');
+        message.channel.send({embed, files: [attachement] });
+    } else {
+        message.channel.send(embed);
+    }
     let wrong = false;
     const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
         time: 100000
@@ -684,7 +692,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                     collector.stop();
                 }
             } else {
-                
+
                 //console.log("setting alreadyGuessed to true")
                 alreadyGuessed = true;
                 collector.stop();
@@ -692,7 +700,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
         }
     })
     collector.on('end', async message1 => {
-        
+
         //console.log(`win: ${win} wrong: ${wrong} alreadyGuessed: ${alreadyGuessed} isStop: ${isStop}`)
         if (win) {
             //console.log("in correct");
@@ -705,31 +713,63 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             } else {
                 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-                    (async () => {
-                        await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
-                    })();
-                
+                (async () => {
+                    await sleep(500);
+                    hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+                })();
+
             }
         } else if (wrong) {
             wrong = false;
             //console.log("in wrong");
             guessesRemaining--;
+           
+                //console.log('here');
+                //console.log(guessesRemaining);
+                if(guessesRemaining == 6){
+                    //console.log("in this palcec")
+                    imageSetter = images[1];
+                } else if (guessesRemaining == 5) {
+                    let results = await showAvatar(message, images[2])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                } else if (guessesRemaining == 4) {
+                    let results = await showAvatar(message, images[3])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                } else if (guessesRemaining == 3) {
+                    let results  = await showAvatar(message, images[4])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                } else if (guessesRemaining == 2) {
+                    let results = imageSetter = await showAvatar(message, images[5])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                } else if (guessesRemaining == 1) {
+                    let results = await showAvatar(message, images[6])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                } else if (guessesRemaining == 0) {
+                    let results = await showAvatar(message, images[7])
+                    imageSetter = results[0];
+                    attachement = results[1];
+                }
+            //console.log(imageSetter);
             if (guessesRemaining == 0) {
                 let lossEmbed = new Discord.MessageEmbed()
                     .setColor("YELLOW")
-                    .setImage(images[images.length - 1])
+                    .setImage(imageSetter)
                     .setDescription(`you have lost :( the word was **${word}**`)
                 message.channel.send(lossEmbed);
             } else {
-                embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
-                    .setImage(imageSetter);
-                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+                // embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
+                //     .setImage(imageSetter);
+                const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-                    (async () => {
-                        await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
-                    })();
+                (async () => {
+                    await sleep(500);
+                    hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+                })();
             }
         } else if (isStop) {
             //console.log("in stop")
@@ -740,16 +780,44 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
         } else if (alreadyGuessed) {
             let guessEmbed = new Discord.MessageEmbed()
                 .setDescription("Letter does not exist or has already been guessed.")
-                message.channel.send(guessEmbed);
+            message.channel.send(guessEmbed);
             //console.log("in already guessed")
             const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-                    (async () => {
-                        await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
-                    })();
+            (async () => {
+                await sleep(500);
+                hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+            })();
         } else {
             guessesRemaining--;
+            if(guessesRemaining == 6){
+                //console.log("in this palcec")
+                imageSetter = images[1];
+            } else if (guessesRemaining == 5) {
+                let results = await showAvatar(message, images[2])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 4) {
+                let results = await showAvatar(message, images[3])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 3) {
+                let results  = await showAvatar(message, images[4])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 2) {
+                let results = imageSetter = await showAvatar(message, images[5])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 1) {
+                let results = await showAvatar(message, images[6])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 0) {
+                let results = await showAvatar(message, images[7])
+                imageSetter = results[0];
+                attachement = results[1];
+            }
             if (guessesRemaining == 0) {
                 let lossEmbed = new Discord.MessageEmbed()
                     .setColor("YELLOW")
@@ -759,16 +827,59 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 //console.log("in else");
                 embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
                     .setImage(imageSetter);
-                    const sleep = ms => new Promise(res => setTimeout(res, ms));
+                const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-                    (async () => {
-                        await sleep(500);
-                        hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters);
-                    })();
+                (async () => {
+                    await sleep(500);
+                    hangman(message, word, guessesRemaining, wordDisplay, letters, win, totalTimesCorrect, guessedLetters, imageSetter, attachement);
+                })();
             }
         }
 
     })
+}
+
+async function showAvatar(message, image) {
+    // const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
+    //     time: 10000
+    // });
+    // collector.on('collect', async message1 => {
+    const canvas = Canvas.createCanvas(500, 1000);
+    const ctx = canvas.getContext('2d');
+    //console.log('in avatar');
+
+    // Since the image takes time to load, you should await it
+    const background = await Canvas.loadImage(image);
+    // This uses the canvas dimensions to stretch the image onto the entire canvas
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    // Draw a rectangle with the dimensions of the entire canvas
+    ctx.strokeStyle = '#74037b';
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    // Pick up the pen
+    ctx.beginPath();
+    // Start the arc to form a circle
+    //ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
+    ctx.arc(310, 310, 80, 0, Math.PI * 2, true);
+    // Put the pen down
+    ctx.closePath();
+    // Clip off the region you drew on
+    ctx.clip();
+
+    // Use helpful Attachment class structure to process the file for you
+    const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL({
+        format: 'jpg'
+    }));
+    ctx.drawImage(avatar, 210, 210, 180, 180);
+    //ctx.drawImage(avatar, 25, 25, 200, 200);
+    const attachment = new Discord.MessageAttachment(canvas.toBuffer(), './hangmanImage.png');
+    // let embed = new Discord.MessageEmbed()
+    //     //.attachFiles(attachment)
+    //     .setImage('attachment://hangmanImage.png');
+    //     message.channel.send({ embed, files: [attachment] })
+    // console.log(attachment)
+    return ['attachment://hangmanImage.png', attachment];
+    // });
+
 }
 function ping(args, message){
     if(args[0].toLowerCase() === "ping"){
