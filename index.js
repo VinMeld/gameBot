@@ -881,7 +881,7 @@ async function showAvatar(message, image) {
     ctx.beginPath();
     // Start the arc to form a circle
     //ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
-    ctx.arc(305, 305, 100, 0, Math.PI * 2, true);
+    ctx.arc(310, 310, 95, 0, Math.PI * 2, true);
     // Put the pen down
     ctx.closePath();
     // Clip off the region you drew on
@@ -891,7 +891,7 @@ async function showAvatar(message, image) {
     const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL({
         format: 'jpg'
     }));
-    ctx.drawImage(avatar, 205, 205, 200, 200);
+    ctx.drawImage(avatar, 210, 210, 195, 195);
     //ctx.drawImage(avatar, 25, 25, 200, 200);
     const attachment = new Discord.MessageAttachment(canvas.toBuffer(), './hangmanImage.png');
     // let embed = new Discord.MessageEmbed()
