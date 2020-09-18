@@ -677,6 +677,11 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             let newGuess = message1.content.substr(1, 1).toLowerCase();
             let indexOfLetter = letters.indexOf(newGuess);
             let charArrayOfWord = word.split("");
+            if(message1.content.substr(1,message1.content.length).toLowerCase().startsWith(word)){
+                totalTimesCorrect = word.length;
+                win = true;
+                collector.stop();
+            } 
             if (message1.content.substr(1, message1.content.length).toLowerCase().startsWith('stop')) {
                 isStop = true;
                 collector.stop();
@@ -876,7 +881,7 @@ async function showAvatar(message, image) {
     ctx.beginPath();
     // Start the arc to form a circle
     //ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
-    ctx.arc(310, 310, 80, 0, Math.PI * 2, true);
+    ctx.arc(305, 305, 100, 0, Math.PI * 2, true);
     // Put the pen down
     ctx.closePath();
     // Clip off the region you drew on
@@ -886,7 +891,7 @@ async function showAvatar(message, image) {
     const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL({
         format: 'jpg'
     }));
-    ctx.drawImage(avatar, 210, 210, 180, 180);
+    ctx.drawImage(avatar, 205, 205, 200, 200);
     //ctx.drawImage(avatar, 25, 25, 200, 200);
     const attachment = new Discord.MessageAttachment(canvas.toBuffer(), './hangmanImage.png');
     // let embed = new Discord.MessageEmbed()
