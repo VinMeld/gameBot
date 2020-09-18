@@ -760,7 +760,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                     .setColor("YELLOW")
                     .setImage(imageSetter)
                     .setDescription(`you have lost :( the word was **${word}**`)
-                message.channel.send(lossEmbed);
+                message.channel.send({lossEmbed, files: [attachement] });
             } else {
                 // embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
                 //     .setImage(imageSetter);
@@ -821,8 +821,9 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             if (guessesRemaining == 0) {
                 let lossEmbed = new Discord.MessageEmbed()
                     .setColor("YELLOW")
+                    .setImage(imageSetter)
                     .setDescription(`you have lost :( the word was **${word}**`)
-                message.channel.send(lossEmbed);
+                message.channel.send({lossEmbed, files: [attachement] });
             } else {
                 //console.log("in else");
                 embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
