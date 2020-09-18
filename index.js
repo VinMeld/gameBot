@@ -8,7 +8,7 @@ const score = require('./score.json');
 const fetch = require('node-fetch');
 const tord = require('./TruthOrDare.json');
 const topScores = require('./topScores.json');
-const images = ["https://i.imgur.com/bBbUtIK.jpg", "https://i.imgur.com/nRKO6DM.jpg", "https://i.imgur.com/lGfZhbc.jpg", "https://i.imgur.com/kyGSGq3.jpg", "https://i.imgur.com/2YkAjHt.jpg","https://i.imgur.com/baE4H0N.jpg","https://i.imgur.com/aPUwgWT.jpg","https://i.imgur.com/eOpJRvl.jpg"]
+const images = ["https://i.imgur.com/bBbUtIK.jpg", "https://i.imgur.com/nRKO6DM.jpg", "https://i.imgur.com/lGfZhbc.jpg", "https://i.imgur.com/kyGSGq3.jpg", "https://i.imgur.com/2YkAjHt.jpg", "https://i.imgur.com/baE4H0N.jpg", "https://i.imgur.com/aPUwgWT.jpg", "https://i.imgur.com/eOpJRvl.jpg"]
 const Canvas = require('canvas');
 const {
     isAbsolute
@@ -26,7 +26,8 @@ function truthOrDare(args, message) {
             random = between(0, tord.length);
         }
         message.channel.send(tord[random].summary);
-    }if (args[0].toLowerCase() === "dare") {
+    }
+    if (args[0].toLowerCase() === "dare") {
         while (tord[random].type != "Dare") {
             random = between(0, tord.length);
         }
@@ -76,7 +77,7 @@ function multipleStartUpQuiz(xhr) {
     xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple", false); // false for synchronous request
     xhr.send(null);
     let myArr = JSON.parse(xhr.responseText).results[0];
-    while (myArr.question.includes('&') || myArr.incorrect_answers[0].includes('&') || myArr.incorrect_answers[1].includes('&') || myArr.incorrect_answers[2].includes('&') || myArr.correct_answer.includes('&') || myArr.question.includes('In the Super Smash Bros. series, which character was the first one to return to the series after being absent from a previous game?') || myArr.question.includes("In 1720,") || myArr.question.includes("What game was used to adver")  || myArr.question.includes("What is the most pref") || myArr.question.includes("How many people") || myArr.question.includes("Gwyneth") || myArr.question.includes("Which American-owned") || myArr.question.includes("In Super Mario Bros., who informs Mario that the princess is in another castle?") || myArr.question.includes("What is the Capital of the United States?")|| myArr.question.includes("What is the first weapon you acquire in Half-Life?")|| myArr.question.includes("What is the correct order of operations for solving equations?") || myArr.question.includes("The Los Angeles Dodgers were originally from what U.S. city?") || myArr.question.includes("Which Game Boy from the Game Boy series of portable video game consoles was released first?")) {
+    while (myArr.question.includes('&') || myArr.incorrect_answers[0].includes('&') || myArr.incorrect_answers[1].includes('&') || myArr.incorrect_answers[2].includes('&') || myArr.correct_answer.includes('&') || myArr.question.includes('In the Super Smash Bros. series, which character was the first one to return to the series after being absent from a previous game?') || myArr.question.includes("In 1720,") || myArr.question.includes("What game was used to adver") || myArr.question.includes("What is the most pref") || myArr.question.includes("How many people") || myArr.question.includes("Gwyneth") || myArr.question.includes("Which American-owned") || myArr.question.includes("In Super Mario Bros., who informs Mario that the princess is in another castle?") || myArr.question.includes("What is the Capital of the United States?") || myArr.question.includes("What is the first weapon you acquire in Half-Life?") || myArr.question.includes("What is the correct order of operations for solving equations?") || myArr.question.includes("The Los Angeles Dodgers were originally from what U.S. city?") || myArr.question.includes("Which Game Boy from the Game Boy series of portable video game consoles was released first?")) {
         XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
         xhr = new XMLHttpRequest();
         xhr.open("GET", "https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple", false); // false for synchronous request
@@ -132,7 +133,7 @@ function startQuiz(args, message, isRandom) {
             if (isStop) {
                 message.channel.send("Stopping");
                 message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
-                if(isRandom == 0){
+                if (isRandom == 0) {
                     addTopScores(2, correct);
                 }
                 correct = 0;
@@ -143,7 +144,7 @@ function startQuiz(args, message, isRandom) {
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
                     message.channel.send(`Correct: ${correct}`)
-                    if(isRandom == 0){
+                    if (isRandom == 0) {
                         addTopScores(2, correct);
                     }
                     correct = 0;
@@ -200,7 +201,7 @@ function startQuiz(args, message, isRandom) {
             if (isStop) {
                 message.channel.send("Stopping");
                 message.channel.send(`Correct: ${correct} \nMissed: ${missed}`);
-                if(isRandom == 0){
+                if (isRandom == 0) {
                     addTopScores(2, correct);
                 }
                 correct = 0;
@@ -211,7 +212,7 @@ function startQuiz(args, message, isRandom) {
                 if (missed > 4) {
                     message.channel.send("Too many misses, stopping");
                     message.channel.send(`Correct: ${correct}`)
-                    if(isRandom == 0){
+                    if (isRandom == 0) {
                         addTopScores(2, correct);
                     }
                     correct = 0;
@@ -306,28 +307,29 @@ function scrambler(args, message) {
         }
     }
 }
-function addTopScores(whichOne, correct){
+
+function addTopScores(whichOne, correct) {
     console.log("in top scores");
     // whichOne: 1 = Scramble, 2 = Quiz
-    if(whichOne == 1){
-        topScores.forEach(val =>{
-            if(val.whichOne == whichOne && val.correct < correct){
-                
+    if (whichOne == 1) {
+        topScores.forEach(val => {
+            if (val.whichOne == whichOne && val.correct < correct) {
+
                 val.whichOne = whichOne;
-                val.correct= correct;
-                val.date= new Date();
+                val.correct = correct;
+                val.date = new Date();
                 fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
                     if (err) console.log(err);
                 });
             }
         })
-    } else if(whichOne == 2){
+    } else if (whichOne == 2) {
         console.log(" Quiz");
-        topScores.forEach(val =>{
-            if(val.whichOne == whichOne && val.correct < correct){
+        topScores.forEach(val => {
+            if (val.whichOne == whichOne && val.correct < correct) {
 
                 val.whichOne = whichOne;
-                val.correct= correct;
+                val.correct = correct;
                 val.date = new Date();
                 fs.writeFileSync("./topScores.json", JSON.stringify(topScores, null, 2), (err) => {
                     if (err) console.log(err);
@@ -336,13 +338,14 @@ function addTopScores(whichOne, correct){
         })
     }
 }
-function showScores(args, message){
+
+function showScores(args, message) {
     if (args[0].toLowerCase().startsWith('community-score')) {
         let displayingArray = [];
         topScores.forEach(function (val, i) {
-            if(val.whichOne === 1){
+            if (val.whichOne === 1) {
                 val.whichOne = "scramble";
-            } else if(val.whichOne === 2){
+            } else if (val.whichOne === 2) {
                 val.whichOne = "quiz";
             }
             displayingArray[i] = [val.whichOne, val.correct]
@@ -362,8 +365,9 @@ function showScores(args, message){
         }
         arrayOfPlayers[arrayOfPlayers.length] = newList;
         returnPages(arrayOfPlayers, "All Scores", message, "Scores");
-    }  
+    }
 }
+
 function addScore(author, correct) {
     let isExist = false;
     score.forEach(val => {
@@ -559,27 +563,29 @@ function scrambleWordAlone(args, message) {
         }
     });
 }
-function invite(args, message){
-    if(args[0] === 'invite-game'){
+
+function invite(args, message) {
+    if (args[0] === 'invite-game') {
         let embed = new Discord.MessageEmbed()
             .setColor("BLUE")
             .setDescription("https://discord.com/api/oauth2/authorize?client_id=751877148465299527&permissions=6144&scope=bot");
         message.channel.send(embed);
     }
 }
-function decideRandomGuess(args, message){
+
+function decideRandomGuess(args, message) {
     if (args[0].toLowerCase() === "guess-number") {
         message.channel.send("Guess a number");
         let randomNumber = between(0, 10);
         randomGuess(args, message, randomNumber);
     }
 }
+
 function randomGuess(args, message, randomNumber) {
     let stop1 = false;
     let correct = false;
     randomNumber = parseInt(randomNumber);
-    const collector = new Discord.MessageCollector(message.channel, m => m.content.includes(".")
-    );
+    const collector = new Discord.MessageCollector(message.channel, m => m.content.includes("."));
     collector.on('collect', message1 => {
         let content = message1.content.substr(1, message1.content.length);
         console.log(parseInt(content, 10) == randomNumber);
@@ -600,27 +606,28 @@ function randomGuess(args, message, randomNumber) {
         }
     })
     collector.on('end', collected => {
-        if (stop1) {
-        } else if(correct){
+        if (stop1) {} else if (correct) {
             decideRandomGuess(["guess-number"], message);
         } else {
             randomGuess(args, message, randomNumber);
         }
     })
 }
-function sendJoke(args, message){
-    if(args[0].toLowerCase().startsWith('joke')){
+
+function sendJoke(args, message) {
+    if (args[0].toLowerCase().startsWith('joke')) {
         var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-        var xhr = new XMLHttpRequest(); 
+        var xhr = new XMLHttpRequest();
         xhr.open("GET", "https://some-random-api.ml/joke", false); // false for synchronous request
         xhr.send(null);
         let myImage = JSON.parse(xhr.responseText).joke;
         let embed = new Discord.MessageEmbed()
-                .setColor("GREEN")
-                .setDescription(`${myImage}`)
+            .setColor("GREEN")
+            .setDescription(`${myImage}`)
         message.channel.send(embed)
     }
 }
+
 function hangmanSetup(args, message) { //
     if (args[0].toLowerCase() === "hangman") {
         console.log("in hangman")
@@ -651,10 +658,13 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
         .setDescription(`Word: ${wordDisplay.join(" ")} \n ${guessedLetters.join(" ")}`)
         .setImage(imageSetter)
         .setFooter(`Guesses remaining: ${guessesRemaining}`);
-    
-    if (attachement != null){
+
+    if (attachement != null) {
         //console.log('sending attachement');
-        message.channel.send({embed, files: [attachement] });
+        message.channel.send({
+            embed,
+            files: [attachement]
+        });
     } else {
         message.channel.send(embed);
     }
@@ -723,44 +733,47 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             wrong = false;
             //console.log("in wrong");
             guessesRemaining--;
-           
-                //console.log('here');
-                //console.log(guessesRemaining);
-                if(guessesRemaining == 6){
-                    //console.log("in this palcec")
-                    imageSetter = images[1];
-                } else if (guessesRemaining == 5) {
-                    let results = await showAvatar(message, images[2])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                } else if (guessesRemaining == 4) {
-                    let results = await showAvatar(message, images[3])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                } else if (guessesRemaining == 3) {
-                    let results  = await showAvatar(message, images[4])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                } else if (guessesRemaining == 2) {
-                    let results = imageSetter = await showAvatar(message, images[5])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                } else if (guessesRemaining == 1) {
-                    let results = await showAvatar(message, images[6])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                } else if (guessesRemaining == 0) {
-                    let results = await showAvatar(message, images[7])
-                    imageSetter = results[0];
-                    attachement = results[1];
-                }
+
+            //console.log('here');
+            //console.log(guessesRemaining);
+            if (guessesRemaining == 6) {
+                //console.log("in this palcec")
+                imageSetter = images[1];
+            } else if (guessesRemaining == 5) {
+                let results = await showAvatar(message, images[2])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 4) {
+                let results = await showAvatar(message, images[3])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 3) {
+                let results = await showAvatar(message, images[4])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 2) {
+                let results = imageSetter = await showAvatar(message, images[5])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 1) {
+                let results = await showAvatar(message, images[6])
+                imageSetter = results[0];
+                attachement = results[1];
+            } else if (guessesRemaining == 0) {
+                let results = await showAvatar(message, images[7])
+                imageSetter = results[0];
+                attachement = results[1];
+            }
             //console.log(imageSetter);
             if (guessesRemaining == 0) {
-                let lossEmbed = new Discord.MessageEmbed()
-                    .setColor("YELLOW")
-                    .setImage(imageSetter)
-                    .setDescription(`you have lost :( the word was **${word}**`);
-                message.channel.send({lossEmbed, files: [attachement] });
+
+
+                embed.setImage(imageSetter)
+                embed.setDescription(`you have lost :( the word was **${word}**`);
+                message.channel.send({
+                    embed,
+                    files: [attachement]
+                });
             } else {
                 // embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
                 //     .setImage(imageSetter);
@@ -779,6 +792,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             message.channel.send(stoppingEmbed);
         } else if (alreadyGuessed) {
             let guessEmbed = new Discord.MessageEmbed()
+                .setColor("YELLOW")
                 .setDescription("Letter does not exist or has already been guessed.")
             message.channel.send(guessEmbed);
             //console.log("in already guessed")
@@ -790,7 +804,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             })();
         } else {
             guessesRemaining--;
-            if(guessesRemaining == 6){
+            if (guessesRemaining == 6) {
                 //console.log("in this palcec")
                 imageSetter = images[1];
             } else if (guessesRemaining == 5) {
@@ -802,7 +816,7 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 3) {
-                let results  = await showAvatar(message, images[4])
+                let results = await showAvatar(message, images[4])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 2) {
@@ -819,11 +833,12 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 attachement = results[1];
             }
             if (guessesRemaining == 0) {
-                let lossEmbed = new Discord.MessageEmbed()
-                    .setColor("YELLOW")
-                    .setImage(imageSetter)
-                    .setDescription(`you have lost :( the word was **${word}**`);
-                message.channel.send({lossEmbed, files: [attachement] });
+                embed.setImage(imageSetter)
+                embed.setDescription(`you have lost :( the word was **${word}**`);
+                message.channel.send({
+                    embed,
+                    files: [attachement]
+                });
             } else {
                 //console.log("in else");
                 embed.setFooter(`Guesses remaining: ${guessesRemaining}`)
@@ -881,8 +896,9 @@ async function showAvatar(message, image) {
     // });
 
 }
-function ping(args, message){
-    if(args[0].toLowerCase() === "ping"){
+
+function ping(args, message) {
+    if (args[0].toLowerCase() === "ping") {
         message.channel.send("pong!");
     }
 }
