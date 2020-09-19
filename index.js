@@ -796,27 +796,27 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 //console.log("in this palcec")
                 imageSetter = images[1];
             } else if (guessesRemaining == 5) {
-                let results = await showAvatar(message, images[2])
+                let results = await showAvatar(message1, images[2])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 4) {
-                let results = await showAvatar(message, images[3])
+                let results = await showAvatar(message1, images[3])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 3) {
-                let results = await showAvatar(message, images[4])
+                let results = await showAvatar(message1, images[4])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 2) {
-                let results = imageSetter = await showAvatar(message, images[5])
+                let results = imageSetter = await showAvatar(message1, images[5])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 1) {
-                let results = await showAvatar(message, images[6])
+                let results = await showAvatar(message1, images[6])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 0) {
-                let results = await showAvatar(message, images[7])
+                let results = await showAvatar(message1, images[7])
                 imageSetter = results[0];
                 attachement = results[1];
             }
