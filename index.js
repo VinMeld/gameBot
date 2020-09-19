@@ -712,11 +712,13 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
     } else {
         message.channel.send(embed);
     }
+    let person;
     let wrong = false;
     const collector = new Discord.MessageCollector(message.channel, m => m.content.includes('.'), {
         time: 100000
     });
     collector.on('collect', message1 => {
+        person = message1;
         if (message1.content != "") {
             let newGuess = message1.content.substr(1, 1).toLowerCase();
             let indexOfLetter = letters.indexOf(newGuess);
@@ -762,8 +764,8 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
             }
         }
     })
-    collector.on('end', async message1 => {
-
+    collector.on('end', async message2 => {
+       
         //console.log(`win: ${win} wrong: ${wrong} alreadyGuessed: ${alreadyGuessed} isStop: ${isStop}`)
         if (win) {
             //console.log("in correct");
@@ -796,27 +798,27 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 //console.log("in this palcec")
                 imageSetter = images[1];
             } else if (guessesRemaining == 5) {
-                let results = await showAvatar(message1, images[2])
+                let results = await showAvatar(person, images[2])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 4) {
-                let results = await showAvatar(message1, images[3])
+                let results = await showAvatar(person, images[3])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 3) {
-                let results = await showAvatar(message1, images[4])
+                let results = await showAvatar(person, images[4])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 2) {
-                let results = imageSetter = await showAvatar(message1, images[5])
+                let results = await showAvatar(person, images[5])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 1) {
-                let results = await showAvatar(message1, images[6])
+                let results = await showAvatar(person, images[6])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 0) {
-                let results = await showAvatar(message1, images[7])
+                let results = await showAvatar(person, images[7])
                 imageSetter = results[0];
                 attachement = results[1];
             }
@@ -865,27 +867,27 @@ function hangman(message, word, guessesRemaining, wordDisplay, letters, win, tot
                 //console.log("in this palcec")
                 imageSetter = images[1];
             } else if (guessesRemaining == 5) {
-                let results = await showAvatar(message, images[2])
+                let results = await showAvatar(person, images[2])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 4) {
-                let results = await showAvatar(message, images[3])
+                let results = await showAvatar(person, images[3])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 3) {
-                let results = await showAvatar(message, images[4])
+                let results = await showAvatar(person, images[4])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 2) {
-                let results = imageSetter = await showAvatar(message, images[5])
+                let results = await showAvatar(person, images[5])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 1) {
-                let results = await showAvatar(message, images[6])
+                let results = await showAvatar(person, images[6])
                 imageSetter = results[0];
                 attachement = results[1];
             } else if (guessesRemaining == 0) {
-                let results = await showAvatar(message, images[7])
+                let results = await showAvatar(person, images[7])
                 imageSetter = results[0];
                 attachement = results[1];
             }
